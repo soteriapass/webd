@@ -1,4 +1,5 @@
 *.conf
 *.db
+pswmgr
 pswmgr-test
 *.o
