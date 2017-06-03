@@ -5,6 +5,8 @@
 #include <chrono>
 #include <thread>
 
+#include "utilities.h"
+
 bool stop = false;
 
 void sighnd(int sig)

@@ -34,8 +34,10 @@ public:
     {
         std::ifstream file(conf_file.get_server_ca_file(), std::ifstream::in);
         std::string ca = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+
         auto credOptions = grpc::SslCredentialsOptions();
         credOptions.pem_root_certs = ca;
+
         auto sslCreds = grpc::SslCredentials(credOptions);
         return grpc::CreateChannel(address, sslCreds);
     }

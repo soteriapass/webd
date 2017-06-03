@@ -9,26 +9,40 @@ LoginPage::LoginPage(const Net::Http::Request& request)
     if(request.method() == Net::Http::Method::Post)
     {
         std::cout << request.body() << std::endl;
-        std::vector<std::string> splitStrings = split_string(request.body(), '&');
+        auto splitStrings = split_string(request.body(), '&');
         for(const std::string& splitString : splitStrings)
         {
             auto querySplit = split_string(splitString, '=');
+            std::cout << querySplit[0] << ":" << querySplit[1] << std::endl;
             if(querySplit[0] == "username")
+            {
+                std::cout << "username set" << std::endl;
                 m_Username = querySplit[1];
+            }
             else if(querySplit[0] == "password")
+            {
+                std::cout << "password set" << std::endl;
                 m_Password = unescape_text(querySplit[1]);
+                std::cout << "Password: " << m_Password << std::endl;
+            }
             else if(querySplit[0] == "token")
+            {
+                std::cout << "token set" << std::endl;
                 m_Token = querySplit[1];
+            }
         }
     }
+    DoLogin();
+}
 
-    if(!m_Username.empty())
-        std::cout << m_Username << std::endl;
-    else if(!m_Password.empty())
-        std::cout << m_Password << std::endl;
-    else if(!m_Token.empty())
-        std::cout << m_Token << std::endl;
-
+LoginPage::LoginPage(const std::string& username, const std::string& password, const std::string& token)
+: m_Authenticated(false)
+, m_Need2fa(false)
+, m_Client(m_Conf, PasswordManagerClient::GetChannel(m_Conf, m_Conf.get_authentication_address_and_port()))
+, m_Username(username)
+, m_Password(password)
+, m_Token(token)
+{
     DoLogin();
 }
 
@@ -91,6 +105,10 @@ bool LoginPage::DoLogin()
     }
 
     m_Authenticated = m_Client.Authenticate(m_Username, m_Password, m_Token, m_Need2fa, false);
+    if(!m_Authenticated)
+    {
+        std::cout << "Authentication failed (" << m_Username << ", " << m_Password << ")" << std::endl;
+    }
     return m_Authenticated;
 }
 

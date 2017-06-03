@@ -12,6 +12,7 @@ class LoginPage : public IPage
 {
 public:
     LoginPage(const Net::Http::Request& request);
+    LoginPage(const std::string& username, const std::string& password, const std::string& token);
 
     virtual void PreContent(std::stringstream& ss) override;
     virtual void HeaderContent(std::stringstream& ss) override;
