@@ -6,7 +6,6 @@
 
 void HelloHandler::Init(Net::Http::Endpoint& endpoint)
 {
-    std::cout << "Init" << std::endl;
     Net::Rest::Routes::Get(m_Router, "/login", Net::Rest::Routes::bind(&HelloHandler::onLogin, this));
 
     endpoint.setHandler(m_Router.handler());
