@@ -9,7 +9,6 @@ bool stop = false;
 
 void sighnd(int sig)
 {
-    std::cout << "sig: " << sig << std::endl;
     stop = true;
 }
 
