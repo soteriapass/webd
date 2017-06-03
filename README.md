@@ -1,18 +1,15 @@
-# Soteria Pass CLI
-Command line interface for accessing information from the Soteria Pass server.
+# Soteria Pass Web Server
+Web server/page for accessing information from the Soteria Pass server.
 
 ## Dependencies
 * [gRpc](http://www.grpc.io/)
 * [Protocol Buffers](https://developers.google.com/protocol-buffers/)
 * [OpenSSL](https://www.openssl.org/)
-* [Sqlite3 (available in repos)](https://sqlite.org/)
+* [pistache](http://pistache.io/)
 
 ## Supported platforms
 
 The only supported platform at the moment is Linux. Window support planned for the future.
-
-## Important notice
-Currently the storage of passwords is done in plain text. This means that the current implementation is __NOT SECURE__
 
 ## Cryptography Notice
 
