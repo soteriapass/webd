@@ -53,7 +53,7 @@ void LoginPage::HeaderContent(std::stringstream& ss)
 {
     if(m_Authenticated)
     {
-        ss << "<meta http-equiv=\"refresh\" content=\"2; URL=/?action=display\">" << std::endl;
+        ss << "<meta http-equiv=\"refresh\" content=\"2; URL=" << m_Conf.get_base_server_path() << "/?action=display\">" << std::endl;
     }
 }
 
@@ -73,7 +73,7 @@ void LoginPage::Page(std::stringstream& ss)
         {
             ss << "<font color=\"red\">" << m_Client.GetLastError() << "</font><br/>" << std::endl;
         }
-        ss << "<form method=\"post\" action=\"/?action=login\">" << std::endl;
+        ss << "<form method=\"post\" action=\"" << m_Conf.get_base_server_path() << "/?action=login\">" << std::endl;
         if(!m_Username.empty())
         {
             ss << "    Username: <input type=\"text\" name=\"username\" value=\"" << m_Username << "\">" << std::endl;
