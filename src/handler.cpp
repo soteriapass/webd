@@ -31,7 +31,7 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
     IPage* page = nullptr;
     if(action == "login")
     {
-        page = new LoginPage(request);
+        page = new LoginPage(request, response);
     }
     else if(action == "index")
     {

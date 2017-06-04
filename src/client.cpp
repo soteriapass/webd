@@ -9,39 +9,42 @@ PasswordManagerClient::PasswordManagerClient(conf& conf_file, std::shared_ptr<gr
 
 bool PasswordManagerClient::Authenticate(const std::string& user, const std::string& pass, const std::string& token, bool& need2fa, bool createUser)
 {
-    grpc::ClientContext context;
-    pswmgr::AuthenticationRequest request;
-    request.set_username(user);
-    request.set_password(pass);
-
-    pswmgr::AuthReply response;
-
-    if(token.size() != 0 && need2fa)
+    if(m_TokenAuth == nullptr)
     {
-        int tfa_token = atoi(token.c_str());
-        request.set_tfa_token(tfa_token);
-    }
+        grpc::ClientContext context;
+        pswmgr::AuthenticationRequest request;
+        request.set_username(user);
+        request.set_password(pass);
 
-    grpc::Status status = m_AuthStub->Authenticate(&context, request, &response);
-    if(status.error_code() == grpc::StatusCode::UNAUTHENTICATED)
-    {
-        m_LastError = status.error_message();
-        return false;
-    }
-    else if(!status.ok())
-    {
-        m_LastError = "Could not connect to server";
-        return false;
-    }
+        pswmgr::AuthReply response;
 
-    if(response.token_needed_for_2fa())
-    {
-        m_LastError = status.error_message();
-        need2fa = response.token_needed_for_2fa();
-        return false;
-    }
+        if(token.size() != 0 && need2fa)
+        {
+            int tfa_token = atoi(token.c_str());
+            request.set_tfa_token(tfa_token);
+        }
 
-    m_TokenAuth = new TokenAuthenticator(response.token());
+        grpc::Status status = m_AuthStub->Authenticate(&context, request, &response);
+        if(status.error_code() == grpc::StatusCode::UNAUTHENTICATED)
+        {
+            m_LastError = status.error_message();
+            return false;
+        }
+        else if(!status.ok())
+        {
+            m_LastError = "Could not connect to server";
+            return false;
+        }
+
+        if(response.token_needed_for_2fa())
+        {
+            m_LastError = status.error_message();
+            need2fa = response.token_needed_for_2fa();
+            return false;
+        }
+
+        m_TokenAuth = new TokenAuthenticator(response.token());
+    }
 
     auto callCreds = grpc::MetadataCredentialsFromPlugin(std::unique_ptr<grpc::MetadataCredentialsPlugin>(m_TokenAuth));
     m_PassMgrStub = pswmgr::PasswordManager::NewStub(GetChannel(m_Conf, m_Conf.get_password_manager_address_and_port(), callCreds));
@@ -57,6 +60,14 @@ std::string PasswordManagerClient::GetAuthToken() const
         return m_TokenAuth->GetToken();
     }
     return {};
+}
+
+void PasswordManagerClient::SetAuthToken(const std::string& token)
+{
+    if(m_TokenAuth == nullptr)
+    {
+        m_TokenAuth = new TokenAuthenticator(token);
+    }
 }
 
 bool PasswordManagerClient::CreateUser(const std::string& user, const std::string& pass, std::string& tfaSecret, std::vector<int>& scratchCodes, std::string& qrcode)

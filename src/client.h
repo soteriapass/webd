@@ -29,6 +29,7 @@ public:
     bool ModifyPassword(const std::string& account_name, const std::string& new_password);
 
     std::string GetAuthToken() const;
+    void SetAuthToken(const std::string& token);
 
     static auto GetChannel(conf& conf_file, const std::string& address) -> decltype(grpc::CreateChannel("", grpc::SslCredentials(grpc::SslCredentialsOptions())))
     {

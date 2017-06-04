@@ -1,12 +1,18 @@
 #include "login.h"
 #include "utilities.h"
 
-LoginPage::LoginPage(const Net::Http::Request& request)
+LoginPage::LoginPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response)
 : m_Authenticated(false)
 , m_Need2fa(false)
 , m_Conf("/etc/pswmgr/pswmgr.conf")
 , m_Client(m_Conf, PasswordManagerClient::GetChannel(m_Conf, m_Conf.get_authentication_address_and_port()))
 {
+    if(request.cookies().has("token"))
+    {
+        std::cout << "cookie for token was present (" << request.cookies().get("token").value << ")" << std::endl;
+        m_Authenticated = true;
+        m_Client.SetAuthToken(request.cookies().get("token").value);
+    }
     if(request.method() == Net::Http::Method::Post)
     {
         auto splitStrings = split_string(request.body(), '&');
@@ -27,7 +33,18 @@ LoginPage::LoginPage(const Net::Http::Request& request)
             }
         }
     }
-    DoLogin();
+    
+    if(!m_Authenticated)
+    {
+        DoLogin();
+    }
+
+    if(m_Authenticated && !response.cookies().has("token"))
+    {
+        std::cout << "Authenticated, added token (" << m_Client.GetAuthToken() << ") to cookie" << std::endl;
+        auto cookie = Net::Http::Cookie("token", m_Client.GetAuthToken());
+        response.cookies().add(cookie);
+    }
 }
 
 LoginPage::LoginPage(const std::string& username, const std::string& password, const std::string& token)
@@ -45,7 +62,7 @@ void LoginPage::PreContent(std::stringstream& ss)
 {
     if(m_Authenticated)
     {
-        ss << "Set-Cookie:Token=" << m_Client.GetAuthToken() << ";" << std::endl;
+//        ss << "Set-Cookie:Token=" << m_Client.GetAuthToken() << ";" << std::endl;
     }
 }
 
