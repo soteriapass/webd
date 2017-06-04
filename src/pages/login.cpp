@@ -44,7 +44,9 @@ void LoginPage::HeaderContent(std::stringstream& ss)
 {
     if(GetIsAuthenticated())
     {
-        ss << "<meta http-equiv=\"refresh\" content=\"2; URL=" << GetConf().get_base_server_path() << "/?action=display\">" << std::endl;
+        std::string content = ReadTemplate("login_header_forward.html");
+        replace(content, "$BASE_URL", GetConf().get_base_server_path());
+        ss << content;
     }
 }
 
@@ -63,30 +65,34 @@ void LoginPage::Page(std::stringstream& ss)
         {
             ss << "<font color=\"red\">" << GetClient().GetLastError() << "</font><br/>" << std::endl;
         }
-        ss << "<form method=\"post\" action=\"" << GetConf().get_base_server_path() << "/?action=login\">" << std::endl;
+
+        std::string content = ReadTemplate("login_body_form.html");
+        replace(content, "$BASE_URL", GetConf().get_base_server_path());
         if(!m_Username.empty())
         {
-            ss << "    Username: <input type=\"text\" name=\"username\" value=\"" << m_Username << "\">" << std::endl;
+            replace(content, "$USERNAME_FIELD", "value=\"" + m_Username + "\"");
         }
         else
         {
-            ss << "    Username: <input type=\"text\" name=\"username\">" << std::endl;
+            replace(content, "$USERNAME_FIELD", "");
         }
-        ss << "    <p>" << std::endl;
-        ss << "    Password: <input type=\"password\" name=\"password\">" << std::endl;
-        ss << "    <p>" << std::endl;
+
         if(m_Need2fa)
         {
-            ss << "    2FA: <input type=\"text\" name=\"token\">" << std::endl;
-            ss << "    <p>" << std::endl;
+            std::string tfaContent = ReadTemplate("login_body_form_tfa.html");
+            replace(content, "$TFA_AUTH", tfaContent);
         }
-        ss << "    <input type=\"submit\" value=\"Login\">" << std::endl;
-        ss << "</form>" << std::endl;
+        else
+        {
+            replace(content, "$TFA_AUTH", "");
+        }
+        ss << content;
     }
     else
     {
-        ss << "<h1>Authenticated succeeded</h1>" << std::endl;
-        ss << "If your browser doesn't automatically redirect you, please click <a href=\"/?action=display\">here</a>." << std::endl;
+        std::string content = ReadTemplate("login_body_forward.html");
+        replace(content, "$BASE_URL", GetConf().get_base_server_path());
+        ss << content;
     }
 }
 
