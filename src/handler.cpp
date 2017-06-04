@@ -1,10 +1,10 @@
 #include "handler.h"
 #include <sstream>
 
-#include "display.h"
-#include "filenotfound.h"
-#include "index.h"
-#include "login.h"
+#include "pages/display.h"
+#include "pages/filenotfound.h"
+#include "pages/index.h"
+#include "pages/login.h"
 
 void HelloHandler::Init(Net::Http::Endpoint& endpoint)
 {
