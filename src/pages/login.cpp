@@ -58,7 +58,6 @@ void LoginPage::Page(std::stringstream& ss)
 
     if(!GetIsAuthenticated())
     {
-        std::cout << "Not Authenticated" << std::endl;
         ss << "<h1>Login</h1>" << std::endl;
         if(!GetClient().GetLastError().empty())
         {
