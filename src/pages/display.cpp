@@ -1,4 +1,5 @@
 #include "display.h"
+#include "utilities.h"
 
 DisplayPage::DisplayPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response)
 : super(request, response)
@@ -25,29 +26,27 @@ void DisplayPage::Page(std::stringstream& ss)
         return;
     }
 
-    ss << "\t<h1>Passwords</h1>" << std::endl;
-    ss << "\t<table>" << std::endl;
-    ss << "\t\t<tr>" << std::endl;
-    ss << "\t\t\t<th>Account Name</th>" << std::endl;
-    ss << "\t\t\t<th>Username</th>" << std::endl;
-    ss << "\t\t\t<th>Password</th>" << std::endl;
-    ss << "\t\t\t<th></th>" << std::endl;
-    ss << "\t\t\t<th>Extra</th>" << std::endl;
-    ss << "\t\t</tr>" << std::endl;
+    std::string bodyContent = ReadTemplate("display_body_general.html");
+
+    std::stringstream ps;
 
     unsigned int index = 0;
     for(auto entry : GetClient().ListPasswords())
     {
-        ss << "\t\t<tr>" << std::endl;
-        ss << "\t\t\t<td>" << entry.account_name() << "</td>" << std::endl;
-        ss << "\t\t\t<td>" << entry.username() << "</td>" << std::endl;
-        ss << "\t\t\t<form>" << std::endl;
-        ss << "\t\t\t\t<td><input type=\"password\" placeholder=\"Password\" id=\"pwd" << index << "\" class=\"masked\" name=\"password\" value=\"" << entry.password() << "\"/></td>" << std::endl;
-        ss << "\t\t\t\t<td><a href=\"#\" onclick=\"toggle_password('pwd" << index << "', 'showhide" << index << "');\" id=\"showhide" << index << "\">Show</a>" << std::endl;
-        ss << "\t\t\t</form>" << std::endl;
-        ss << "\t\t\t<td>" << entry.extra() << "</td>" << std::endl;
-        ss << "\t\t</tr>" << std::endl;
+        std::string entryContent = ReadTemplate("display_body_password_entry.html");
+
+        replace(entryContent, "$ACCOUNT_NAME", entry.account_name());
+        replace(entryContent, "$USERNAME", entry.username());
+        replace(entryContent, "$PASSWORD", entry.password());
+        replace(entryContent, "$EXTRA", entry.extra());
+
+        std::stringstream intString;
+        intString << index;
+        replace(entryContent, "$INDEX", intString.str());
+
+        ps << entryContent << std::endl;
         ++index;
     }
-    ss << "\t</table>" << std::endl;
+    replace(bodyContent, "$PASSWORD_ENTRIES", ps.str());
+    ss << bodyContent;
 }
