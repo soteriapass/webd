@@ -1,25 +1,10 @@
 #include "login.h"
 #include "utilities.h"
 
-bool LoginPage::HandleCookie(const Net::Http::Request& request, Net::Http::ResponseWriter& response, PasswordManagerClient& client)
-{
-    if(request.cookies().has("token"))
-    {
-        std::cout << "cookie for token was present (" << request.cookies().get("token").value << ")" << std::endl;
-        client.SetAuthToken(request.cookies().get("token").value);
-        return true;
-    }
-    return false;
-}
-
 LoginPage::LoginPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response)
-: m_Authenticated(false)
+: super(request, response)
 , m_Need2fa(false)
-, m_Conf("/etc/pswmgr/pswmgr.conf")
-, m_Client(m_Conf, PasswordManagerClient::GetChannel(m_Conf, m_Conf.get_authentication_address_and_port()))
 {
-    m_Authenticated = HandleCookie(request, response, m_Client);
-
     if(request.method() == Net::Http::Method::Post)
     {
         auto splitStrings = split_string(request.body(), '&');
@@ -41,43 +26,25 @@ LoginPage::LoginPage(const Net::Http::Request& request, Net::Http::ResponseWrite
         }
     }
     
-    if(!m_Authenticated)
+    if(!GetIsAuthenticated())
     {
         DoLogin();
     }
-
-    if(m_Authenticated && !response.cookies().has("token"))
-    {
-        std::cout << "Authenticated, added token (" << m_Client.GetAuthToken() << ") to cookie" << std::endl;
-        auto cookie = Net::Http::Cookie("token", m_Client.GetAuthToken());
-        response.cookies().add(cookie);
-    }
-}
-
-LoginPage::LoginPage(const std::string& username, const std::string& password, const std::string& token)
-: m_Authenticated(false)
-, m_Need2fa(false)
-, m_Client(m_Conf, PasswordManagerClient::GetChannel(m_Conf, m_Conf.get_authentication_address_and_port()))
-, m_Username(username)
-, m_Password(password)
-, m_Token(token)
-{
-    DoLogin();
 }
 
 void LoginPage::PreContent(std::stringstream& ss)
 {
-    if(m_Authenticated)
+    if(GetIsAuthenticated())
     {
-//        ss << "Set-Cookie:Token=" << m_Client.GetAuthToken() << ";" << std::endl;
+//        ss << "Set-Cookie:Token=" << GetClient().GetAuthToken() << ";" << std::endl;
     }
 }
 
 void LoginPage::HeaderContent(std::stringstream& ss)
 {
-    if(m_Authenticated)
+    if(GetIsAuthenticated())
     {
-        ss << "<meta http-equiv=\"refresh\" content=\"2; URL=" << m_Conf.get_base_server_path() << "/?action=display\">" << std::endl;
+        ss << "<meta http-equiv=\"refresh\" content=\"2; URL=" << GetConf().get_base_server_path() << "/?action=display\">" << std::endl;
     }
 }
 
@@ -89,15 +56,15 @@ void LoginPage::Page(std::stringstream& ss)
         std::string token;
     }
 
-    if(!m_Authenticated)
+    if(!GetIsAuthenticated())
     {
         std::cout << "Not Authenticated" << std::endl;
         ss << "<h1>Login</h1>" << std::endl;
-        if(!m_Client.GetLastError().empty())
+        if(!GetClient().GetLastError().empty())
         {
-            ss << "<font color=\"red\">" << m_Client.GetLastError() << "</font><br/>" << std::endl;
+            ss << "<font color=\"red\">" << GetClient().GetLastError() << "</font><br/>" << std::endl;
         }
-        ss << "<form method=\"post\" action=\"" << m_Conf.get_base_server_path() << "/?action=login\">" << std::endl;
+        ss << "<form method=\"post\" action=\"" << GetConf().get_base_server_path() << "/?action=login\">" << std::endl;
         if(!m_Username.empty())
         {
             ss << "    Username: <input type=\"text\" name=\"username\" value=\"" << m_Username << "\">" << std::endl;
@@ -128,11 +95,11 @@ bool LoginPage::DoLogin()
 {
     if(m_Username.empty() || m_Password.empty())
     {
-        m_Authenticated = false;
+        SetIsAuthenticated(false);
         return false;
     }
 
-    m_Authenticated = m_Client.Authenticate(m_Username, m_Password, m_Token, m_Need2fa, false);
-    return m_Authenticated;
+    SetIsAuthenticated(GetClient().Authenticate(m_Username, m_Password, m_Token, m_Need2fa, false));
+    return GetIsAuthenticated();
 }
 

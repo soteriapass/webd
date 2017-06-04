@@ -1,6 +1,8 @@
 #pragma once
 
 #include "page.h"
+#include "authenticatedpage.h"
+
 #include "client.h"
 #include "conf.h"
 
@@ -8,25 +10,20 @@
 
 #include "pistache/http.h"
 
-class LoginPage : public IPage
+class LoginPage : public AuthenticatedPage
 {
+    typedef AuthenticatedPage super;
 public:
     LoginPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response);
-    LoginPage(const std::string& username, const std::string& password, const std::string& token);
 
     virtual void PreContent(std::stringstream& ss) override;
     virtual void HeaderContent(std::stringstream& ss) override;
     virtual void Page(std::stringstream& ss) override;
 
-    static bool HandleCookie(const Net::Http::Request& request, Net::Http::ResponseWriter& response, PasswordManagerClient& client);
 private:
     bool DoLogin();
 
 private:
-    conf m_Conf;
-    PasswordManagerClient m_Client;
-
-    bool        m_Authenticated;
     bool        m_Need2fa;
     std::string m_Username;
     std::string m_Password;
