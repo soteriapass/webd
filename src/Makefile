@@ -18,7 +18,7 @@ vpath %.proto $(PROTOS_PATH)
 
 all: system-check pswmgr
 
-pswmgr: pswmgr.pb.o pswmgr.grpc.pb.o client.o main.o token_authenticator.o conf.o handler.o login.o index.o utilities.o
+pswmgr: pswmgr.pb.o pswmgr.grpc.pb.o client.o main.o token_authenticator.o conf.o handler.o login.o index.o utilities.o filenotfound.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto

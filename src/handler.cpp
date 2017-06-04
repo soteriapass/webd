@@ -3,6 +3,7 @@
 
 #include "index.h"
 #include "login.h"
+#include "filenotfound.h"
 
 void HelloHandler::Init(Net::Http::Endpoint& endpoint)
 {
@@ -21,14 +22,30 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
         action = request.query().get("action").get();
     }
 
+    if(action.empty() && request.resource() == "/")
+    {
+        action = "index";
+    }
+
     IPage* page = nullptr;
     if(action == "login")
     {
         page = new LoginPage(request);
     }
-    else
+    else if(action == "index")
     {
         page = new IndexPage();
+    }
+    else if(request.resource().find('.') != std::string::npos)
+    {
+        std::string resolvedResource = "static/" + request.resource();
+        Net::Http::serveFile(response, resolvedResource.c_str()).then([](ssize_t bytes) {;
+        }, Async::NoExcept);
+        return;
+    }
+    else
+    {
+        page = new FileNotFoundPage();
     }
 
     std::stringstream ss;
