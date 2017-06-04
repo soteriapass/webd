@@ -16,12 +16,9 @@ INSTALL_PROGRAM=$(INSTALL) -Dpm 0755
 
 vpath %.proto $(PROTOS_PATH)
 
-all: system-check pswmgr pswmgr-test
+all: system-check pswmgr
 
 pswmgr: pswmgr.pb.o pswmgr.grpc.pb.o client.o main.o token_authenticator.o conf.o handler.o login.o index.o utilities.o
-	$(CXX) $^ $(LDFLAGS) -o $@
-
-pswmgr-test: pswmgr.pb.o pswmgr.grpc.pb.o client.o test.o token_authenticator.o conf.o handler.o login.o index.o utilities.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto
