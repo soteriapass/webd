@@ -3,3 +3,4 @@
 pswmgr
 pswmgr-test
 *.o
+*.pb.*
