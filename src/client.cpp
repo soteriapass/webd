@@ -165,8 +165,10 @@ bool PasswordManagerClient::DeletePassword(const std::string& account_name)
     return true;
 }
 
-bool PasswordManagerClient::ListPasswords()
+std::vector<pswmgr::PasswordEntry> PasswordManagerClient::ListPasswords()
 {
+    std::vector<pswmgr::PasswordEntry> returnVal;
+
     grpc::ClientContext context;
     pswmgr::SimpleRequest request;
     pswmgr::PasswordList response;
@@ -175,18 +177,15 @@ bool PasswordManagerClient::ListPasswords()
     if(!status.ok())
     {
         m_LastError = status.error_message();
-        return false;
+        return returnVal;
     }
 
+    returnVal.reserve(response.passwords_size());
     for(const pswmgr::PasswordEntry& entry: response.passwords())
     {
-        std::cout << "account name: " << entry.account_name() << std::endl;
-        std::cout << "username: " << entry.username() << std::endl;
-        std::cout << "password: " << entry.password() << std::endl;
-        std::cout << "extra: " << entry.extra() << std::endl;
-        std::cout << std::endl;
+        returnVal.push_back(entry);
     }
-    return true;
+    return returnVal;
 }
 
 bool PasswordManagerClient::ModifyPassword(const std::string& account_name, const std::string& new_password)

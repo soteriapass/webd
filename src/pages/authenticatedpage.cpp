@@ -8,7 +8,6 @@ AuthenticatedPage::AuthenticatedPage(const Net::Http::Request& request, Net::Htt
 
     if(m_Authenticated && !response.cookies().has("token"))
     {
-        std::cout << "Authenticated, added token (" << m_Client.GetAuthToken() << ") to cookie" << std::endl;
         auto cookie = Net::Http::Cookie("token", m_Client.GetAuthToken());
         response.cookies().add(cookie);
     }
@@ -30,8 +29,10 @@ bool AuthenticatedPage::HandleCookie(const Net::Http::Request& request, Net::Htt
 {
     if(request.cookies().has("token"))
     {
-        std::cout << "cookie for token was present (" << request.cookies().get("token").value << ")" << std::endl;
         client.SetAuthToken(request.cookies().get("token").value);
+       
+        bool need2fa;
+        client.Authenticate("", "", "", need2fa, false);
         return true;
     }
     return false;

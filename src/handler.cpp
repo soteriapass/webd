@@ -39,7 +39,7 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
     }
     else if(action == "display")
     {
-        page = new DisplayPage();
+        page = new DisplayPage(request, response);
     }
     else if(request.resource().find('.') != std::string::npos)
     {

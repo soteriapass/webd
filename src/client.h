@@ -25,7 +25,8 @@ public:
 
     bool AddPassword(const std::string& account_name, const std::string& username, const std::string& password, const std::string& extra);
     bool DeletePassword(const std::string& account_name);
-    bool ListPasswords();
+    //bool ListPasswords();
+    std::vector<pswmgr::PasswordEntry> ListPasswords();
     bool ModifyPassword(const std::string& account_name, const std::string& new_password);
 
     std::string GetAuthToken() const;

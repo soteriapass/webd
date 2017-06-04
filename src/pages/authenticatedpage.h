@@ -1,3 +1,5 @@
+#pragma once
+
 #include "page.h"
 #include "client.h"
 #include "conf.h"
