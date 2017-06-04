@@ -1,18 +1,25 @@
 #include "login.h"
 #include "utilities.h"
 
+bool LoginPage::HandleCookie(const Net::Http::Request& request, Net::Http::ResponseWriter& response, PasswordManagerClient& client)
+{
+    if(request.cookies().has("token"))
+    {
+        std::cout << "cookie for token was present (" << request.cookies().get("token").value << ")" << std::endl;
+        client.SetAuthToken(request.cookies().get("token").value);
+        return true;
+    }
+    return false;
+}
+
 LoginPage::LoginPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response)
 : m_Authenticated(false)
 , m_Need2fa(false)
 , m_Conf("/etc/pswmgr/pswmgr.conf")
 , m_Client(m_Conf, PasswordManagerClient::GetChannel(m_Conf, m_Conf.get_authentication_address_and_port()))
 {
-    if(request.cookies().has("token"))
-    {
-        std::cout << "cookie for token was present (" << request.cookies().get("token").value << ")" << std::endl;
-        m_Authenticated = true;
-        m_Client.SetAuthToken(request.cookies().get("token").value);
-    }
+    m_Authenticated = HandleCookie(request, response, m_Client);
+
     if(request.method() == Net::Http::Method::Post)
     {
         auto splitStrings = split_string(request.body(), '&');

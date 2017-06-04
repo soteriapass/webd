@@ -18,6 +18,7 @@ public:
     virtual void HeaderContent(std::stringstream& ss) override;
     virtual void Page(std::stringstream& ss) override;
 
+    static bool HandleCookie(const Net::Http::Request& request, Net::Http::ResponseWriter& response, PasswordManagerClient& client);
 private:
     bool DoLogin();
 
