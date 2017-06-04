@@ -1,9 +1,10 @@
 #include "handler.h"
 #include <sstream>
 
+#include "display.h"
+#include "filenotfound.h"
 #include "index.h"
 #include "login.h"
-#include "filenotfound.h"
 
 void HelloHandler::Init(Net::Http::Endpoint& endpoint)
 {
@@ -35,6 +36,10 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
     else if(action == "index")
     {
         page = new IndexPage();
+    }
+    else if(action == "display")
+    {
+        page = new DisplayPage();
     }
     else if(request.resource().find('.') != std::string::npos)
     {
