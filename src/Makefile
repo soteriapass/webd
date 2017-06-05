@@ -16,9 +16,9 @@ INSTALL_PROGRAM=$(INSTALL) -Dpm 0755
 
 vpath %.proto $(PROTOS_PATH)
 
-all: system-check pswmgr
+all: system-check pswmgr-webd
 
-pswmgr: pswmgr.pb.o pswmgr.grpc.pb.o client.o main.o token_authenticator.o conf.o handler.o pages/login.o pages/index.o utilities.o pages/filenotfound.o pages/display.o pages/authenticatedpage.o pages/styledpage.o
+pswmgr-webd: pswmgr.pb.o pswmgr.grpc.pb.o client.o main.o token_authenticator.o conf.o handler.o pages/login.o pages/index.o utilities.o pages/filenotfound.o pages/display.o pages/authenticatedpage.o pages/styledpage.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto
@@ -28,14 +28,7 @@ pswmgr: pswmgr.pb.o pswmgr.grpc.pb.o client.o main.o token_authenticator.o conf.
 	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=. $<
 
 clean:
-	rm -fr *.o pages/*.o *.pb.cc *.pb.h pswmgr
-
-install:
-	$(INSTALL_DIRECTORY) $(DESTDIR)/usr/bin
-	$(INSTALL_DIRECTORY) $(DESTDIR)/etc/pswmgr
-	$(INSTALL_PROGRAM) pswmgr $(DESTDIR)/usr/bin
-	$(INSTALL_PROGRAM) ../examples/pswmgr.conf $(DESTDIR)/etc/pswmgr
-
+	rm -fr *.o pages/*.o *.pb.cc *.pb.h pswmgr-webd
 
 # The following is to test your system and ensure a smoother experience.
 # They are by no means necessary to actually compile a grpc-enabled software.
