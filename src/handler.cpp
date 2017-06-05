@@ -78,7 +78,6 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
     */
 
     //We do this as a hack, for now
-    std::cout << "Creating file" << std::endl;
     std::ofstream file;
     file.open("temp.html");
     file << ss.str();
