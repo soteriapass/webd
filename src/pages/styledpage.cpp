@@ -10,16 +10,12 @@ void StyledPage::PreContent(std::stringstream& ss)
 
 void StyledPage::HeaderContent(std::stringstream& ss)
 {
-    std::cout << "HeaderContent" << std::endl;
     ss << ReadTemplate("header.html");
     HeaderContentImpl(ss);
-    std::cout << "HeaderContent End" << std::endl;
 }
 
 void StyledPage::Page(std::stringstream& ss)
 {
-    std::cout << "Page" << std::endl;
-
     ss << ReadTemplate("body_start.html");
     std::string content = ReadTemplate("content.html");
 
@@ -33,6 +29,4 @@ void StyledPage::Page(std::stringstream& ss)
 
     ss << ReadTemplate("body_end.html");
     ss << ReadTemplate("scripts.html");
-
-    std::cout << "Page End" << std::endl;
 }
