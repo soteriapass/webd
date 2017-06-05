@@ -6,11 +6,11 @@ DisplayPage::DisplayPage(const Net::Http::Request& request, Net::Http::ResponseW
 {
 }
 
-void DisplayPage::PreContent(std::stringstream& ss)
+void DisplayPage::PreContentImpl(std::stringstream& ss)
 {
 }
 
-void DisplayPage::HeaderContent(std::stringstream& ss)
+void DisplayPage::HeaderContentImpl(std::stringstream& ss)
 {
     if(!GetIsAuthenticated())
     {
@@ -19,7 +19,7 @@ void DisplayPage::HeaderContent(std::stringstream& ss)
     ss << "\t<script src=\"js/display.js\"></script>" << std::endl;
 }
 
-void DisplayPage::Page(std::stringstream& ss)
+void DisplayPage::PageImpl(std::stringstream& ss)
 {
     if(!GetIsAuthenticated())
     {

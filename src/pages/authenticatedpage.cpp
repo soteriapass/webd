@@ -13,18 +13,6 @@ AuthenticatedPage::AuthenticatedPage(const Net::Http::Request& request, Net::Htt
     }
 }
 
-void AuthenticatedPage::PreContent(std::stringstream& ss)
-{
-}
-
-void AuthenticatedPage::HeaderContent(std::stringstream& ss)
-{
-}
-
-void AuthenticatedPage::Page(std::stringstream& ss)
-{
-}
-
 bool AuthenticatedPage::HandleCookie(const Net::Http::Request& request, Net::Http::ResponseWriter& response, PasswordManagerClient& client)
 {
     if(request.cookies().has("token"))

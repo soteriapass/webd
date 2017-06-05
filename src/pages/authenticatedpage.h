@@ -1,19 +1,16 @@
 #pragma once
 
 #include "page.h"
+#include "styledpage.h"
 #include "client.h"
 #include "conf.h"
 
 #include "pistache/http.h"
 
-class AuthenticatedPage : public IPage
+class AuthenticatedPage : public StyledPage
 {
 public:
     AuthenticatedPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response);
-
-    virtual void PreContent(std::stringstream& ss) override;
-    virtual void HeaderContent(std::stringstream& ss) override;
-    virtual void Page(std::stringstream& ss) override;
 
 protected:
     bool GetIsAuthenticated() const             { return m_Authenticated; }

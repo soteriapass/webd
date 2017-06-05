@@ -16,9 +16,9 @@ class LoginPage : public AuthenticatedPage
 public:
     LoginPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response);
 
-    virtual void PreContent(std::stringstream& ss) override;
-    virtual void HeaderContent(std::stringstream& ss) override;
-    virtual void Page(std::stringstream& ss) override;
+    virtual void PreContentImpl(std::stringstream& ss) override;
+    virtual void HeaderContentImpl(std::stringstream& ss) override;
+    virtual void PageImpl(std::stringstream& ss) override;
 
 private:
     bool DoLogin();

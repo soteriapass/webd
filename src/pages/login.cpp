@@ -32,7 +32,7 @@ LoginPage::LoginPage(const Net::Http::Request& request, Net::Http::ResponseWrite
     }
 }
 
-void LoginPage::PreContent(std::stringstream& ss)
+void LoginPage::PreContentImpl(std::stringstream& ss)
 {
     if(GetIsAuthenticated())
     {
@@ -40,7 +40,7 @@ void LoginPage::PreContent(std::stringstream& ss)
     }
 }
 
-void LoginPage::HeaderContent(std::stringstream& ss)
+void LoginPage::HeaderContentImpl(std::stringstream& ss)
 {
     if(GetIsAuthenticated())
     {
@@ -50,7 +50,7 @@ void LoginPage::HeaderContent(std::stringstream& ss)
     }
 }
 
-void LoginPage::Page(std::stringstream& ss)
+void LoginPage::PageImpl(std::stringstream& ss)
 {
     if(!m_Username.empty() && !m_Password.empty())
     {
