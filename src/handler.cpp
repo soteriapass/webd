@@ -15,7 +15,7 @@ void HelloHandler::Init(Net::Http::Endpoint& endpoint)
 
 void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::ResponseWriter response)
 {
-    response.headers().add<Net::Http::Header::ContentType>(MIME(Text, Html));
+    std::cout << "request: " << request.resource() << std::endl;
 
     std::string action;
     if(request.query().has("action"))
@@ -44,8 +44,7 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
     else if(request.resource().find('.') != std::string::npos)
     {
         std::string resolvedResource = "static/" + request.resource();
-        Net::Http::serveFile(response, resolvedResource.c_str()).then([](ssize_t bytes) {;
-        }, Async::NoExcept);
+        Net::Http::serveFile(response, resolvedResource.c_str());
         return;
     }
     else
@@ -53,13 +52,16 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
         page = new FileNotFoundPage();
     }
 
+    response.headers().add<Net::Http::Header::ContentType>(MIME(Text, Html));
+
     std::stringstream ss;
+    ss << "<!DOCTYPE html>" << std::endl;
     ss << "<html>" << std::endl;
     ss << "<head>" << std::endl;
     ss << "<title>Soteria Pass</title>" << std::endl;
     page->HeaderContent(ss);
     ss << "</head>" << std::endl;
-    ss << "<body>" << std::endl;
+    ss << "<body class=\"hold-transition skin-blue sidebar-mini\">" << std::endl;
     page->Page(ss);
     ss << "</body>" << std::endl;
     ss << "</html>" << std::endl;
@@ -67,7 +69,22 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
     delete page;
     page = nullptr;
 
-    response.send(Net::Http::Code::Ok, ss.str());
+    //This is the "proper" way to serve everything"
+    /*
+    std::string pageContents = ss.str();
+    std::cout << "start to send response (size: " << pageContents.size() << ")" << std::endl;
+    response.send(Net::Http::Code::Ok, pageContents);
+    std::cout << "response sent for: " << request.resource() << std::endl;
+    */
+
+    //We do this as a hack, for now
+    std::cout << "Creating file" << std::endl;
+    std::ofstream file;
+    file.open("temp.html");
+    file << ss.str();
+    file.close();
+    Net::Http::serveFile(response, "temp.html");
+    std::remove("temp.html");
 }
 
 void HelloHandler::onLogin(const Net::Rest::Request& request, Net::Http::ResponseWriter response)
