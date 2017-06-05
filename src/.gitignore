@@ -2,5 +2,6 @@
 *.db
 pswmgr
 pswmgr-test
+pswmgr-webd
 *.o
 *.pb.*
