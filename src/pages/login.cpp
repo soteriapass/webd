@@ -1,13 +1,23 @@
 #include "login.h"
+#include "log.h"
 #include "utilities.h"
 
-LoginPage::LoginPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response)
+LoginPage::LoginPage(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 : super(request, response)
 , m_Need2fa(false)
 {
-    if(request.method() == Net::Http::Method::Post)
+    if(request.getMethod() == "POST")
     {
-        auto splitStrings = split_string(request.body(), '&');
+        std::ostringstream ss;
+        request.write(ss);
+
+        logging::get() << "size: " << request.size() << std::endl;
+        for(auto iter : request.response())
+        {
+            logging::get() << iter.first << ": " << iter.second << std::endl;
+        }
+
+        auto splitStrings = split_string(ss.str(), '&');
         for(const std::string& splitString : splitStrings)
         {
             auto querySplit = split_string(splitString, '=');

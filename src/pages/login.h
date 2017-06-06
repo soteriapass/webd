@@ -14,7 +14,7 @@ class LoginPage : public AuthenticatedPage
 {
     typedef AuthenticatedPage super;
 public:
-    LoginPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response);
+    LoginPage(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
 
     virtual void PreContentImpl(std::stringstream& ss) override;
     virtual void HeaderContentImpl(std::stringstream& ss) override;

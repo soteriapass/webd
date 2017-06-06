@@ -1,17 +1,12 @@
-#include "pistache/endpoint.h"
-#include "pistache/http_header.h"
-#include "pistache/router.h"
+#pragma once
 
-class HelloHandler : public Net::Http::Handler {
+#include <Poco/Net/HTTPRequestHandler.h>
+#include <Poco/Net/HTTPServerRequest.h>
+#include <Poco/Net/HTTPServerResponse.h>
+
+class PswmgrRequestHandler : public Poco::Net::HTTPRequestHandler 
+{
 public:
-
-    HTTP_PROTOTYPE(HelloHandler)
-
-    void Init(Net::Http::Endpoint& endpoint);
-
-    void onRequest(const Net::Http::Request& request, Net::Http::ResponseWriter response);
-    void onLogin(const Net::Rest::Request& request, Net::Http::ResponseWriter response);
-private:
-    Net::Rest::Router m_Router;
+    virtual void handleRequest(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp);
 };
 

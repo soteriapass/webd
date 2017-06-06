@@ -12,7 +12,7 @@ class DisplayPage : public AuthenticatedPage
 {
     typedef AuthenticatedPage super;
 public:
-    DisplayPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response);
+    DisplayPage(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
 
     virtual void PreContentImpl(std::stringstream& ss) override;
     virtual void HeaderContentImpl(std::stringstream& ss) override;

@@ -1,7 +1,7 @@
 #include "display.h"
 #include "utilities.h"
 
-DisplayPage::DisplayPage(const Net::Http::Request& request, Net::Http::ResponseWriter& response)
+DisplayPage::DisplayPage(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 : super(request, response)
 {
 }
@@ -31,7 +31,8 @@ void DisplayPage::PageImpl(std::stringstream& ss)
     std::stringstream ps;
 
     unsigned int index = 0;
-    for(auto entry : GetClient().ListPasswords())
+    auto passwords = GetClient().ListPasswords();
+    for(auto entry : passwords)
     {
         std::string entryContent = ReadTemplate("display_body_password_entry.html");
 

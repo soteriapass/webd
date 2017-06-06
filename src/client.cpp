@@ -1,4 +1,5 @@
 #include "client.h"
+#include "log.h"
 
 PasswordManagerClient::PasswordManagerClient(conf& conf_file, std::shared_ptr<grpc::Channel> channel)
 : m_AuthStub(pswmgr::Authentication::NewStub(channel)) 
@@ -46,8 +47,13 @@ bool PasswordManagerClient::Authenticate(const std::string& user, const std::str
         m_TokenAuth = new TokenAuthenticator(response.token());
     }
 
+    logging::get() << "Creating call credentials with token: " << m_TokenAuth->GetToken() << std::endl;
     auto callCreds = grpc::MetadataCredentialsFromPlugin(std::unique_ptr<grpc::MetadataCredentialsPlugin>(m_TokenAuth));
+
+    logging::get() << "New Password Manager with address: " << m_Conf.get_password_manager_address_and_port() << std::endl;
     m_PassMgrStub = pswmgr::PasswordManager::NewStub(GetChannel(m_Conf, m_Conf.get_password_manager_address_and_port(), callCreds));
+
+    logging::get() << "New User Management service with address: " << m_Conf.get_user_mangement_address_and_port() << std::endl;
     m_UserMgrStub = pswmgr::UserManagement::NewStub(GetChannel(m_Conf, m_Conf.get_user_mangement_address_and_port(), callCreds));
 
     return true;
@@ -177,6 +183,7 @@ std::vector<pswmgr::PasswordEntry> PasswordManagerClient::ListPasswords()
     if(!status.ok())
     {
         m_LastError = status.error_message();
+        logging::get() << "grpc: " << m_LastError << std::endl;
         return returnVal;
     }
 

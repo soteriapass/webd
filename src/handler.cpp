@@ -1,29 +1,28 @@
 #include "handler.h"
 #include <sstream>
+#include <iostream>
 
 #include "pages/display.h"
 #include "pages/filenotfound.h"
 #include "pages/index.h"
 #include "pages/login.h"
 
-void HelloHandler::Init(Net::Http::Endpoint& endpoint)
-{
-    Net::Rest::Routes::Get(m_Router, "/login", Net::Rest::Routes::bind(&HelloHandler::onLogin, this));
+#include "log.h"
+#include "utilities.h"
 
-    endpoint.setHandler(m_Router.handler());
-}
-
-void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::ResponseWriter response)
+void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 {
-    std::cout << "request: " << request.resource() << std::endl;
+    logging::get() << "[" << request.clientAddress().toString() << "] request: " << request.getURI() << std::endl;
+//    logging::get() << "\t" << request.response().
 
     std::string action;
-    if(request.query().has("action"))
+    auto query = getQuery(request.getURI());
+    if(query.has("action"))
     {
-        action = request.query().get("action").get();
+        action = query.get("action");
     }
 
-    if(action.empty() && request.resource() == "/")
+    if(action.empty() && request.getURI() == "/")
     {
         action = "index";
     }
@@ -41,10 +40,24 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
     {
         page = new DisplayPage(request, response);
     }
-    else if(request.resource().find('.') != std::string::npos)
+    else if(request.getURI().find('.') != std::string::npos)
     {
-        std::string resolvedResource = "static/" + request.resource();
-        Net::Http::serveFile(response, resolvedResource.c_str());
+        std::string resolvedResource = "static/" + request.getURI().substr(1);
+        std::string ext = request.getURI().substr(request.getURI().find('.')+1);
+        if(ext == "js")
+        {
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+            response.setContentType("application/javascript");
+
+            std::ifstream file(resolvedResource, std::ifstream::in);
+            std::string content = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+
+            std::ostream& out = response.send();
+            out << content;
+            out.flush();
+            return;
+        }
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
         return;
     }
     else
@@ -52,7 +65,7 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
         page = new FileNotFoundPage();
     }
 
-    response.headers().add<Net::Http::Header::ContentType>(MIME(Text, Html));
+    response.setContentType("text/html");
 
     std::stringstream ss;
     ss << "<!DOCTYPE html>" << std::endl;
@@ -69,38 +82,9 @@ void HelloHandler::onRequest(const Net::Http::Request& request, Net::Http::Respo
     delete page;
     page = nullptr;
 
-    //This is the "proper" way to serve everything"
-    /*
     std::string pageContents = ss.str();
-    std::cout << "start to send response (size: " << pageContents.size() << ")" << std::endl;
-    response.send(Net::Http::Code::Ok, pageContents);
-    std::cout << "response sent for: " << request.resource() << std::endl;
-    */
-
-    //We do this as a hack, for now
-    std::ofstream file;
-    file.open("temp.html");
-    file << ss.str();
-    file.close();
-    Net::Http::serveFile(response, "temp.html");
-    std::remove("temp.html");
-}
-
-void HelloHandler::onLogin(const Net::Rest::Request& request, Net::Http::ResponseWriter response)
-{
-    std::cout << "onLogin" << std::endl;
-    response.headers().add<Net::Http::Header::ContentType>(MIME(Text, Html));
-
-    std::stringstream ss;
-/*    ss << "<html>" << std::endl;
-    ss << "<head>" << std::endl;
-    ss << "<title>Soteria Pass</title>" << std::endl;
-    page.HeaderContent(ss);
-    ss << "</head>" << std::endl;
-    ss << "<body>" << std::endl;
-    page.Page(ss);
-    ss << "</body>" << std::endl;
-    ss << "</html>" << std::endl;
-*/
-    response.send(Net::Http::Code::Ok, ss.str());
+    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+    std::ostream& outStream = response.send();
+    outStream << ss.str();
+    outStream.flush();
 }

@@ -1,38 +1,50 @@
-#include "handler.h"
 #include <signal.h>
 
 #include <iostream>
 #include <chrono>
 #include <thread>
 
+#include "log.h"
 #include "utilities.h"
 
-bool stop = false;
+#include "handlerfactory.h"
 
-void sighnd(int sig)
+#include <Poco/Net/ServerSocket.h>
+#include <Poco/Net/HTTPServer.h>
+#include <Poco/Util/ServerApplication.h>
+
+class PswmgrServerApp : public Poco::Util::ServerApplication
 {
-    stop = true;
-}
+protected:
+  int main(const std::vector<std::string> &)
+  {
+    Poco::Net::HTTPServer s(new PswmgrRequestHandlerFactory, Poco::Net::ServerSocket(9090), new Poco::Net::HTTPServerParams);
 
-int main() {
-    signal(SIGINT,  sighnd);
-    signal(SIGILL,  sighnd);
-    signal(SIGKILL, sighnd);
+    s.start();
+    logging::get() << "Soteria Password Web Server started" << std::endl;
 
-    Net::Address addr(Net::Ipv4::any(), Net::Port(9090));
+    waitForTerminationRequest();  // wait for CTRL-C or kill
 
-    auto opts = Net::Http::Endpoint::options().threads(1);
-    //opts.flags(Net::Tcp::Options::InstallSignalHandler);
-    Net::Http::Endpoint server(addr);
-    server.init(opts);
-    auto handler = std::make_shared<HelloHandler>();
-    handler->Init(server);
-    server.setHandler(handler);
-    server.serveThreaded();
-    while(!stop)
+    logging::get() << "Shutting down..." << std::endl;
+    s.stop();
+
+    return Application::EXIT_OK;
+  }
+};
+
+int main(int argc, char** argv) 
+{
+    conf _conf;
+    if(!logging::init(_conf))
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::cout << "Couldn't initialize logging" << std::endl;
+        return -1;
     }
-    //std::cout << "Calling server.shutdown();" << std::endl;
-    server.shutdown();
+
+    PswmgrServerApp app;
+    auto ret = app.run(argc, argv);
+
+    logging::destroy();
+
+    return ret;
 }
