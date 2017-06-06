@@ -43,11 +43,32 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
     {
         std::string resolvedResource = "static/" + request.getURI().substr(1);
         std::string ext = request.getURI().substr(request.getURI().rfind('.')+1);
+        std::string contentType;
         if(ext == "js")
         {
+            contentType = "application/javascript";
+        }
+        else if(ext == "css")
+        {
+            contentType = "text/css";
+        }
+        else if(ext == "html")
+        {
+            contentType = "text/html";
+        }
+        else if(ext == "png")
+        {
+            contentType = "image/png";
+        }
+        else if(ext == "jpg" || ext == "jpeg")
+        {
+            contentType = "image/jpeg";
+        }
+
+        if(!contentType.empty())
+        {
             response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-            response.setChunkedTransferEncoding(true);
-            response.setContentType("application/javascript");
+            response.setContentType(contentType);
 
             std::ifstream file(resolvedResource, std::ifstream::in);
             std::string content = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
@@ -55,9 +76,11 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
             std::ostream& out = response.send();
             out << content;
             out.flush();
-            return;
         }
-        response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+        else
+        {
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+        }
         return;
     }
     else
