@@ -39,13 +39,14 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
     {
         page = new DisplayPage(request, response);
     }
-    else if(request.getURI().find('.') != std::string::npos)
+    else if(request.getURI().rfind('.') != std::string::npos)
     {
         std::string resolvedResource = "static/" + request.getURI().substr(1);
-        std::string ext = request.getURI().substr(request.getURI().find('.')+1);
+        std::string ext = request.getURI().substr(request.getURI().rfind('.')+1);
         if(ext == "js")
         {
             response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+            response.setChunkedTransferEncoding(true);
             response.setContentType("application/javascript");
 
             std::ifstream file(resolvedResource, std::ifstream::in);

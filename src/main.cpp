@@ -16,20 +16,25 @@
 class PswmgrServerApp : public Poco::Util::ServerApplication
 {
 protected:
-  int main(const std::vector<std::string> &)
-  {
-    Poco::Net::HTTPServer s(new PswmgrRequestHandlerFactory, Poco::Net::ServerSocket(9090), new Poco::Net::HTTPServerParams);
+    int main(const std::vector<std::string> &)
+    {
+        Poco::Net::HTTPServerParams* pParams = new Poco::Net::HTTPServerParams();
+        pParams->setMaxQueued(128);
+        pParams->setMaxThreads(16);
 
-    s.start();
-    logging::get() << "Soteria Password Web Server started" << std::endl;
+        Poco::Net::ServerSocket svs(9090);
+        Poco::Net::HTTPServer s(new PswmgrRequestHandlerFactory, svs, pParams);
 
-    waitForTerminationRequest();  // wait for CTRL-C or kill
+        s.start();
+        logging::get() << "Soteria Password Web Server started" << std::endl;
 
-    logging::get() << "Shutting down..." << std::endl;
-    s.stop();
+        waitForTerminationRequest();  // wait for CTRL-C or kill
 
-    return Application::EXIT_OK;
-  }
+        logging::get() << "Shutting down..." << std::endl;
+        s.stop();
+
+        return Application::EXIT_OK;
+    }
 };
 
 int main(int argc, char** argv) 
