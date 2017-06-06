@@ -1,4 +1,5 @@
 #include "display.h"
+#include "log.h"
 #include "utilities.h"
 
 DisplayPage::DisplayPage(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
@@ -14,6 +15,7 @@ void DisplayPage::HeaderContentImpl(std::stringstream& ss)
 {
     if(!GetIsAuthenticated())
     {
+        logging::get() << "\tRedirecting to login page" << std::endl;
         ss << "<meta http-equiv=\"refresh\" content=\"2; URL=" << GetConf().get_base_server_path() << "/?action=login\">" << std::endl;
     }
     ss << "\t<script src=\"js/display.js\"></script>" << std::endl;

@@ -12,8 +12,7 @@
 
 void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 {
-    logging::get() << "[" << request.clientAddress().toString() << "] request: " << request.getURI() << std::endl;
-//    logging::get() << "\t" << request.response().
+    logging::get() << "[" << request.clientAddress().toString() << "][METHOD: " << request.getMethod() << "] request: " << request.getURI() << std::endl;
 
     std::string action;
     auto query = getQuery(request.getURI());

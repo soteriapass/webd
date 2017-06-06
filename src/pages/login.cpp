@@ -2,43 +2,39 @@
 #include "log.h"
 #include "utilities.h"
 
-LoginPage::LoginPage(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
+#include <Poco/Net/HTMLForm.h>
+
+LoginPage::LoginPage(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 : super(request, response)
 , m_Need2fa(false)
 {
     if(request.getMethod() == "POST")
     {
-        std::ostringstream ss;
-        request.write(ss);
+        Poco::Net::HTMLForm form(request, request.stream());
 
-        logging::get() << "size: " << request.size() << std::endl;
-        for(auto iter : request.response())
+        for(auto iter : form)
         {
-            logging::get() << iter.first << ": " << iter.second << std::endl;
-        }
-
-        auto splitStrings = split_string(ss.str(), '&');
-        for(const std::string& splitString : splitStrings)
-        {
-            auto querySplit = split_string(splitString, '=');
-            if(querySplit[0] == "username")
+            if(iter.first == "username")
             {
-                m_Username = querySplit[1];
+                m_Username = iter.second;
             }
-            else if(querySplit[0] == "password")
+            else if(iter.first == "password")
             {
-                m_Password = unescape_text(querySplit[1]);
+                m_Password = iter.second;
             }
-            else if(querySplit[0] == "token")
+            else if(iter.first == "token")
             {
-                m_Token = querySplit[1];
+                m_Token = iter.second;
             }
         }
     }
     
     if(!GetIsAuthenticated())
     {
-        DoLogin();
+        if(DoLogin())
+        {
+            SetupCookie(request, response, GetClient().GetAuthToken());
+        }
     }
 }
 
@@ -74,6 +70,7 @@ void LoginPage::PageImpl(std::stringstream& ss)
         if(!GetClient().GetLastError().empty())
         {
             ss << "<font color=\"red\">" << GetClient().GetLastError() << "</font><br/>" << std::endl;
+            logging::get() << "grpc: " << GetClient().GetLastError() << std::endl;
         }
 
         std::string content = ReadTemplate("login_body_form.html");

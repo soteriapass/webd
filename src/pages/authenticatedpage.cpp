@@ -1,4 +1,5 @@
 #include "authenticatedpage.h"
+#include "log.h"
 
 AuthenticatedPage::AuthenticatedPage(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
 : m_Conf("/etc/pswmgr/pswmgr.conf")
@@ -6,12 +7,9 @@ AuthenticatedPage::AuthenticatedPage(const Poco::Net::HTTPServerRequest& request
 {
     m_Authenticated = HandleCookie(request, response, m_Client);
 
-    Poco::Net::NameValueCollection cookies;
-    request.getCookies(cookies);
     if(m_Authenticated)
     {
-        Poco::Net::HTTPCookie cookie("token", m_Client.GetAuthToken());
-        response.addCookie(cookie);
+       SetupCookie(request, response, m_Client.GetAuthToken()); 
     }
 }
 
@@ -21,10 +19,19 @@ bool AuthenticatedPage::HandleCookie(const Poco::Net::HTTPServerRequest& request
     request.getCookies(cookies);
     if(cookies.has("token"))
     {
+        logging::get() << "\tRetrieved token cookie" << std::endl;
         client.SetAuthToken(cookies.get("token"));
  
         bool need2fa;
-        return client.Authenticate("", "", "", need2fa, false);
+        client.Authenticate("", "", "", need2fa, false);
+        return true;
     }
     return false;
+}
+
+void AuthenticatedPage::SetupCookie(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response, std::string token)
+{
+    logging::get() << "\tAdding token cookie" << std::endl;
+    Poco::Net::HTTPCookie cookie("token", token);
+    response.addCookie(cookie);
 }

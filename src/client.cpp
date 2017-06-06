@@ -12,6 +12,7 @@ bool PasswordManagerClient::Authenticate(const std::string& user, const std::str
 {
     if(m_TokenAuth == nullptr)
     {
+        logging::get() << "\tAttempting authentication" << std::endl;
         grpc::ClientContext context;
         pswmgr::AuthenticationRequest request;
         request.set_username(user);
@@ -47,13 +48,11 @@ bool PasswordManagerClient::Authenticate(const std::string& user, const std::str
         m_TokenAuth = new TokenAuthenticator(response.token());
     }
 
-    logging::get() << "Creating call credentials with token: " << m_TokenAuth->GetToken() << std::endl;
+    logging::get() << "\tCreating call credentials with token: " << m_TokenAuth->GetToken() << std::endl;
     auto callCreds = grpc::MetadataCredentialsFromPlugin(std::unique_ptr<grpc::MetadataCredentialsPlugin>(m_TokenAuth));
 
-    logging::get() << "New Password Manager with address: " << m_Conf.get_password_manager_address_and_port() << std::endl;
     m_PassMgrStub = pswmgr::PasswordManager::NewStub(GetChannel(m_Conf, m_Conf.get_password_manager_address_and_port(), callCreds));
 
-    logging::get() << "New User Management service with address: " << m_Conf.get_user_mangement_address_and_port() << std::endl;
     m_UserMgrStub = pswmgr::UserManagement::NewStub(GetChannel(m_Conf, m_Conf.get_user_mangement_address_and_port(), callCreds));
 
     return true;

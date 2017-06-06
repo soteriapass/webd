@@ -21,6 +21,7 @@ protected:
     conf& GetConf() { return m_Conf; }
 
     static bool HandleCookie(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response, PasswordManagerClient& client);
+    static void SetupCookie(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response, std::string token);
 private:
     bool m_Authenticated;
 
