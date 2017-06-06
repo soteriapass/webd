@@ -53,3 +53,8 @@ std::string unescape_text(const std::string& str)
     replace(dst, "%40", "@");
     return dst;
 }
+
+HttpQuery getQuery(const std::string& str)
+{
+    return { str };
+}

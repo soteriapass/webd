@@ -5,3 +5,4 @@ pswmgr-test
 pswmgr-webd
 *.o
 *.pb.*
+*.log
