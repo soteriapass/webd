@@ -7,11 +7,11 @@ DisplayPage::DisplayPage(const Poco::Net::HTTPServerRequest& request, Poco::Net:
 {
 }
 
-void DisplayPage::PreContentImpl(std::stringstream& ss)
+void DisplayPage::PreContent(std::stringstream& ss)
 {
 }
 
-void DisplayPage::HeaderContentImpl(std::stringstream& ss)
+void DisplayPage::HeaderContent(std::stringstream& ss)
 {
     if(!GetIsAuthenticated())
     {
@@ -21,14 +21,14 @@ void DisplayPage::HeaderContentImpl(std::stringstream& ss)
     ss << "\t<script src=\"js/display.js\"></script>" << std::endl;
 }
 
-void DisplayPage::PageImpl(std::stringstream& ss)
+void DisplayPage::Page(std::stringstream& ss)
 {
     if(!GetIsAuthenticated())
     {
         return;
     }
 
-    std::string bodyContent = ReadTemplate("display_body_general.html");
+    std::string bodyContent = ss.str();
 
     std::stringstream ps;
 
@@ -50,6 +50,7 @@ void DisplayPage::PageImpl(std::stringstream& ss)
         ps << entryContent << std::endl;
         ++index;
     }
-    replace(bodyContent, "$PASSWORD_ENTRIES", ps.str());
+    replace(bodyContent, "$CONTENT", ps.str());
+    ss.str({});
     ss << bodyContent;
 }

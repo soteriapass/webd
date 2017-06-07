@@ -1,6 +1,9 @@
 #include "httpquery.h"
 
+#include "log.h"
 #include "utilities.h"
+
+#include <string>
 
 HttpQuery::HttpQuery(const std::string& uri)
 {
@@ -13,6 +16,7 @@ HttpQuery::HttpQuery(const std::string& uri)
         {
             auto querySplit = split_string(splitString, '=');
             m_Queries[querySplit[0]] = querySplit[1];
+            logging::get() << "\tQuery (" << querySplit[0] << ": " << querySplit[1] << ")" << std::endl;
         }
     }
 }
