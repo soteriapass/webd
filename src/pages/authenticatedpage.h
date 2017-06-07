@@ -1,14 +1,13 @@
 #pragma once
 
 #include "page.h"
-#include "styledpage.h"
 #include "client.h"
 #include "conf.h"
 
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 
-class AuthenticatedPage : public StyledPage
+class AuthenticatedPage : public IPage
 {
 public:
     AuthenticatedPage(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);

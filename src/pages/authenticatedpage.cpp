@@ -19,7 +19,6 @@ bool AuthenticatedPage::HandleCookie(const Poco::Net::HTTPServerRequest& request
     request.getCookies(cookies);
     if(cookies.has("token"))
     {
-        logging::get() << "\tRetrieved token cookie" << std::endl;
         client.SetAuthToken(cookies.get("token"));
  
         bool need2fa;
@@ -31,7 +30,6 @@ bool AuthenticatedPage::HandleCookie(const Poco::Net::HTTPServerRequest& request
 
 void AuthenticatedPage::SetupCookie(const Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response, std::string token)
 {
-    logging::get() << "\tAdding token cookie" << std::endl;
     Poco::Net::HTTPCookie cookie("token", token);
     response.addCookie(cookie);
 }

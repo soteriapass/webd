@@ -38,7 +38,7 @@ LoginPage::LoginPage(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServe
     }
 }
 
-void LoginPage::PreContentImpl(std::stringstream& ss)
+void LoginPage::PreContent(std::stringstream& ss)
 {
     if(GetIsAuthenticated())
     {
@@ -46,7 +46,7 @@ void LoginPage::PreContentImpl(std::stringstream& ss)
     }
 }
 
-void LoginPage::HeaderContentImpl(std::stringstream& ss)
+void LoginPage::HeaderContent(std::stringstream& ss)
 {
     if(GetIsAuthenticated())
     {
@@ -56,7 +56,7 @@ void LoginPage::HeaderContentImpl(std::stringstream& ss)
     }
 }
 
-void LoginPage::PageImpl(std::stringstream& ss)
+void LoginPage::Page(std::stringstream& ss)
 {
     if(!m_Username.empty() && !m_Password.empty())
     {
