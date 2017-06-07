@@ -43,9 +43,18 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
 
     if(request.getURI().rfind('.') != std::string::npos)
     {
-        std::string resolvedResource = "static/" + request.getURI().substr(1);
-        std::string ext = request.getURI().substr(request.getURI().rfind('.')+1);
+        int queryStart = request.getURI().rfind('?');
+        if(queryStart == std::string::npos)
+        {
+            queryStart = request.getURI().size();
+        }
+        std::string resolvedResource = "static/" + request.getURI().substr(1, queryStart-1);
+
+        int extIndexStart = request.getURI().rfind('.');
+        std::string ext = request.getURI().substr(extIndexStart + 1, queryStart - extIndexStart - 1);
         std::string contentType;
+
+        logging::get() << "\tResolved Resource: " << resolvedResource << " (ext: " << ext << ")" << std::endl;
         if(ext == "js")
         {
             contentType = "application/javascript";
@@ -74,6 +83,11 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
             Parser parser;
             std::stringstream ss;
             parser.Parse(resolvedResource, ss);
+
+            if(page != nullptr)
+            {
+                page->Page(ss);
+            }
 
             std::ostream& out = response.send();
             out << ss.str();
