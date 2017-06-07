@@ -50,7 +50,8 @@ void DisplayPage::Page(std::stringstream& ss)
         ps << entryContent << std::endl;
         ++index;
     }
-    replace(bodyContent, "$CONTENT", ps.str());
+
+    replace(bodyContent, "$PASSWORD_ENTRIES", ps.str());
     ss.str({});
     ss << bodyContent;
 }
