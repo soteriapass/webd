@@ -20,7 +20,7 @@ protected:
     {
         Poco::Net::HTTPServerParams* pParams = new Poco::Net::HTTPServerParams();
         pParams->setMaxQueued(128);
-        pParams->setMaxThreads(16);
+        pParams->setMaxThreads(1);
 
         Poco::Net::ServerSocket svs(9090);
         Poco::Net::HTTPServer s(new PswmgrRequestHandlerFactory, svs, pParams);
