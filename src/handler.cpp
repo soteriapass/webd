@@ -6,6 +6,7 @@
 #include "pages/filenotfound.h"
 #include "pages/index.h"
 #include "pages/login.h"
+#include "pages/parser.h"
 
 #include "log.h"
 #include "utilities.h"
@@ -39,7 +40,8 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
     {
         page = new DisplayPage(request, response);
     }
-    else if(request.getURI().rfind('.') != std::string::npos)
+
+    if(request.getURI().rfind('.') != std::string::npos)
     {
         std::string resolvedResource = "static/" + request.getURI().substr(1);
         std::string ext = request.getURI().substr(request.getURI().rfind('.')+1);
@@ -64,6 +66,20 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
         {
             contentType = "image/jpeg";
         }
+        else if(ext == "cshtml")
+        {
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+            response.setContentType("text/html");
+
+            Parser parser;
+            std::stringstream ss;
+            parser.Parse(resolvedResource, ss);
+
+            std::ostream& out = response.send();
+            out << ss.str();
+            out.flush();
+            return;
+        }
 
         if(!contentType.empty())
         {
@@ -83,7 +99,7 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
         }
         return;
     }
-    else
+    if(page == nullptr)
     {
         page = new FileNotFoundPage();
     }
@@ -91,16 +107,8 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
     response.setContentType("text/html");
 
     std::stringstream ss;
-    ss << "<!DOCTYPE html>" << std::endl;
-    ss << "<html>" << std::endl;
-    ss << "<head>" << std::endl;
-    ss << "<title>Soteria Pass</title>" << std::endl;
     page->HeaderContent(ss);
-    ss << "</head>" << std::endl;
-    ss << "<body class=\"hold-transition skin-blue sidebar-mini\">" << std::endl;
     page->Page(ss);
-    ss << "</body>" << std::endl;
-    ss << "</html>" << std::endl;
 
     delete page;
     page = nullptr;

@@ -18,7 +18,7 @@ vpath %.proto $(PROTOS_PATH)
 
 all: system-check pswmgr-webd
 
-pswmgr-webd: pswmgr.pb.o pswmgr.grpc.pb.o client.o main.o token_authenticator.o conf.o handler.o pages/login.o pages/index.o utilities.o pages/filenotfound.o pages/display.o pages/authenticatedpage.o pages/styledpage.o handlerfactory.o httpquery.o log.o
+pswmgr-webd: pswmgr.pb.o pswmgr.grpc.pb.o client.o main.o token_authenticator.o conf.o handler.o pages/login.o pages/index.o utilities.o pages/filenotfound.o pages/display.o pages/authenticatedpage.o pages/styledpage.o handlerfactory.o httpquery.o log.o pages/parser.o pages/basepage.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 %.grpc.pb.cc: %.proto
