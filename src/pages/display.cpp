@@ -27,8 +27,23 @@ void DisplayPage::Page(std::stringstream& ss)
     {
         return;
     }
+}
 
-    std::string bodyContent = ss.str();
+void DisplayPage::RegisterParsers(Parser& parser)
+{
+    auto func = [&](const std::string& p1, std::stringstream& ss)
+    {
+        DisplayPasswords(p1, ss);
+    };
+    parser.RegisterParser("display_passwords", func);
+}
+
+void DisplayPage::DisplayPasswords(const std::string&, std::stringstream& ss)
+{
+    if(!GetIsAuthenticated())
+    {
+        return;
+    }
 
     std::stringstream ps;
 
@@ -50,8 +65,5 @@ void DisplayPage::Page(std::stringstream& ss)
         ps << entryContent << std::endl;
         ++index;
     }
-
-    replace(bodyContent, "$PASSWORD_ENTRIES", ps.str());
-    ss.str({});
-    ss << bodyContent;
+    ss << ps.str();
 }

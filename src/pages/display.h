@@ -17,4 +17,8 @@ public:
     virtual void PreContent(std::stringstream& ss) override;
     virtual void HeaderContent(std::stringstream& ss) override;
     virtual void Page(std::stringstream& ss) override;
+    virtual void RegisterParsers(Parser& parser) override;
+
+private:
+    void DisplayPasswords(const std::string&, std::stringstream& ss);
 };
