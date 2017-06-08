@@ -58,49 +58,6 @@ void LoginPage::HeaderContent(std::stringstream& ss)
 
 void LoginPage::Page(std::stringstream& ss)
 {
-    if(!m_Username.empty() && !m_Password.empty())
-    {
-        bool need2fa = false;
-        std::string token;
-    }
-
-    if(!GetIsAuthenticated())
-    {
-        ss << "<h1>Login</h1>" << std::endl;
-        if(!GetClient().GetLastError().empty())
-        {
-            ss << "<font color=\"red\">" << GetClient().GetLastError() << "</font><br/>" << std::endl;
-            logging::get() << "grpc: " << GetClient().GetLastError() << std::endl;
-        }
-
-        std::string content = ReadTemplate("login_body_form.html");
-        replace(content, "$BASE_URL", GetConf().get_base_server_path());
-        if(!m_Username.empty())
-        {
-            replace(content, "$USERNAME_FIELD", "value=\"" + m_Username + "\"");
-        }
-        else
-        {
-            replace(content, "$USERNAME_FIELD", "");
-        }
-
-        if(m_Need2fa)
-        {
-            std::string tfaContent = ReadTemplate("login_body_form_tfa.html");
-            replace(content, "$TFA_AUTH", tfaContent);
-        }
-        else
-        {
-            replace(content, "$TFA_AUTH", "");
-        }
-        ss << content;
-    }
-    else
-    {
-        std::string content = ReadTemplate("login_body_forward.html");
-        replace(content, "$BASE_URL", GetConf().get_base_server_path());
-        ss << content;
-    }
 }
 
 bool LoginPage::DoLogin()
