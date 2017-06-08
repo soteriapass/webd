@@ -54,7 +54,7 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
         std::string ext = request.getURI().substr(extIndexStart + 1, queryStart - extIndexStart - 1);
         std::string contentType;
 
-        logging::get() << "\tResolved Resource: " << resolvedResource << " (ext: " << ext << ")" << std::endl;
+        logging::get() << "\tResolved Resource: " << resolvedResource << std::endl;
         if(ext == "js")
         {
             contentType = "application/javascript";
@@ -82,10 +82,15 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
 
             Parser parser;
             std::stringstream ss;
+            if(page != nullptr)
+            {
+                page->RegisterParsers(parser);
+            }
             parser.Parse(resolvedResource, ss);
 
             if(page != nullptr)
             {
+                page->HeaderContent(ss);
                 page->Page(ss);
             }
 
