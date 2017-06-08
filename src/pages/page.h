@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include "parser.h"
 
 class IPage
 {
@@ -9,6 +10,7 @@ public:
     virtual void PreContent(std::stringstream& ss)=0;
     virtual void HeaderContent(std::stringstream& ss)=0;
     virtual void Page(std::stringstream& ss)=0;
+    virtual void RegisterParsers(Parser& parser) { }
 
     std::string ReadTemplate(const std::string& templateName)
     {
