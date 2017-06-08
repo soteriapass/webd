@@ -22,6 +22,10 @@ void Parser::Parse(const std::string& filename, std::stringstream& ss)
         {
             Require(param, ss);
         }
+        else if(m_RegParsers.find(function) != m_RegParsers.end())
+        {
+            m_RegParsers[function](param, ss);
+        }
 
         startPos = fileContents.find('$', lastPos + 2);
     };
@@ -30,6 +34,11 @@ void Parser::Parse(const std::string& filename, std::stringstream& ss)
     {
         ss << fileContents.substr(lastPos);
     }
+}
+
+void Parser::RegisterParser(const std::string& name, std::function<void(const std::string&, std::stringstream&)> func)
+{
+    m_RegParsers[name] = func;
 }
 
 void Parser::Require(const std::string& filename, std::stringstream& ss)
