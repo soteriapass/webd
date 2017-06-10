@@ -21,7 +21,7 @@
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <img src="adminlte/dist/img/default_user.png" class="user-image" alt="User Image">
-                  <span class="hidden-xs">$USERNAME</span>
+                  <span class="hidden-xs">$username("");</span>
                 </a>
                 <ul class="dropdown-menu">
                   <!-- User image -->
@@ -29,17 +29,17 @@
                     <img src="adminlte/dist/img/default_user.png" class="img-circle" alt="User Image">
 
                     <p>
-                      $USERNAME
+                      $username("");
                       <small>Free Account</small>
                     </p>
                   </li>
                   <!-- Menu Footer-->
                   <li class="user-footer">
                     <div class="pull-left">
-                      <a href="$BASE_URL/?action=profile" class="btn btn-default btn-flat">Profile</a>
+                      <a href="$base_url("");/?action=profile" class="btn btn-default btn-flat">Profile</a>
                     </div>
                     <div class="pull-right">
-                      <a href="$BASE_URL/?action=logout" class="btn btn-default btn-flat">Sign out</a>
+                      <a href="$base_url("");/?action=logout" class="btn btn-default btn-flat">Sign out</a>
                     </div>
                   </li>
                 </ul>
@@ -58,7 +58,7 @@
               <img src="adminlte/dist/img/default_user.png" class="img-circle" alt="User Image">
             </div>
             <div class="pull-left info">
-              <p>$USERNAME</p>
+              <p>$username("");</p>
               <small>Free User</small>
             </div>
           </div>
@@ -84,9 +84,9 @@
                 </span>
               </a>
               <ul class="treeview-menu">
-                <li class="active"><a href="display.cshtml?action=display"><i class="fa fa-list"></i>Passwords</a></li>
-                <li><a href="newlogin.cshtml"><i class="fa fa-user-plus"></i>New Login</a></li>
-                <li><a href="newtag.cshtml"><i class="fa fa-tag"></i>New Tag</a></li>
+                <li$is_active("display");><a href="display.cshtml?action=display"><i class="fa fa-list"></i>Passwords</a></li>
+                <li$is_active("newlogin");><a href="newlogin.cshtml"><i class="fa fa-user-plus"></i>New Login</a></li>
+                <li$is_active("newtag");><a href="newtag.cshtml"><i class="fa fa-tag"></i>New Tag</a></li>
               </ul>
             </li>
             <li class="treeview">
