@@ -22,4 +22,5 @@ public:
 private:
     void DisplayPasswords(const std::string&, std::stringstream& ss);
     void FillHeader(const std::string&, std::stringstream& ss);
+    void AddActiveTag(const std::string&, std::stringstream& ss);
 };

@@ -44,6 +44,12 @@ void DisplayPage::RegisterParsers(Parser& parser)
         FillHeader(p1, ss);
     };
     parser.RegisterParser("header", func2);
+
+    auto func3 = [&](const std::string& p1, std::stringstream& ss)
+    {
+        AddActiveTag(p1, ss);
+    };
+    parser.RegisterParser("is_active", func3);
 }
 
 void DisplayPage::DisplayPasswords(const std::string&, std::stringstream& ss)
@@ -84,4 +90,12 @@ void DisplayPage::FillHeader(const std::string&, std::stringstream& ss)
         ss << "<meta http-equiv=\"refresh\" content=\"2; URL=" << GetConf().get_base_server_path() << "/login.cshtml?action=login\">" << std::endl;
     }
     ss << "\t<script src=\"js/display.js\"></script>" << std::endl;
+}
+
+void DisplayPage:: AddActiveTag(const std::string& page, std::stringstream& ss)
+{
+    if(page == "display")
+    {
+        ss << " class=\"active\"";
+    }
 }
