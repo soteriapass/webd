@@ -20,9 +20,15 @@ public:
     virtual void HeaderContent(std::stringstream& ss) override;
     virtual void Page(std::stringstream& ss) override;
 
+    virtual void RegisterParsers(Parser& parser) override;
 private:
     bool DoLogin();
 
+    void ShowErrorMessage(const std::string&, std::stringstream& ss);
+    void ShowStatusMessage(const std::string&, std::stringstream& ss);
+    void ShowFormUsername(const std::string&, std::stringstream& ss);
+    void ShowFormPassword(const std::string&, std::stringstream& ss);
+    void AddTwoFactorAuthFromElem(const std::string&, std::stringstream& ss);
 private:
     bool        m_Need2fa;
     std::string m_Username;

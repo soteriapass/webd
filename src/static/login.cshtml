@@ -33,15 +33,16 @@
     <div class="login-box-body">
     <p class="login-box-msg">Sign in to start your session</p>
     $error_msg("");
-    $rnd_msg("");
+    $status_msg("");
 
     <form action="/login.cshtml?action=login" method="post">
       <div class="form-group has-feedback">
-      <input type="text" name="username" class="form-control" placeholder="Email">
+      <input type="text" name="username" class="form-control" placeholder="Username"$form_username("");>
       </div>
       <div class="form-group has-feedback">
-      <input type="password" name="password" class="form-control" placeholder="Password">
+      <input type="password" name="password" class="form-control" placeholder="Password"$form_password("");>
       </div>
+      $two_factor_auth_form("");
       <div class="row">
       <div class="col-xs-8">
         <div class="checkbox icheck">
