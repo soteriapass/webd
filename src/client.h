@@ -19,6 +19,7 @@ public:
 
     bool Authenticate(const std::string& user, const std::string& pass, const std::string& token, bool& need2fa, bool create = false);
     bool ValidateToken(const std::string& token);
+    bool ValidateToken(const std::string& token, std::string& username);
     bool CreateUser(const std::string& user, const std::string& pass, std::string& tfaSecret, std::vector<int>& scratchCodes, std::string& qrcode);
     bool UpdateUserPassword(const std::string& user, const std::string& pass);
 
