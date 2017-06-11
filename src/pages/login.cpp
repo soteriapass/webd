@@ -63,6 +63,7 @@ void LoginPage::Page(std::stringstream& ss)
 
 void LoginPage::RegisterParsers(Parser& parser)
 {
+    super::RegisterParsers(parser);
     auto func = [&](const std::string& p1, std::stringstream& ss)
     {
         ShowErrorMessage(p1, ss);

@@ -33,6 +33,7 @@ void DisplayPage::Page(std::stringstream& ss)
 
 void DisplayPage::RegisterParsers(Parser& parser)
 {
+    super::RegisterParsers(parser);
     auto func = [&](const std::string& p1, std::stringstream& ss)
     {
         DisplayPasswords(p1, ss);
