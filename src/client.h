@@ -18,6 +18,7 @@ public:
     PasswordManagerClient(conf& conf_file, std::shared_ptr<grpc::Channel> channel);
 
     bool Authenticate(const std::string& user, const std::string& pass, const std::string& token, bool& need2fa, bool create = false);
+    bool ValidateToken(const std::string& token);
     bool CreateUser(const std::string& user, const std::string& pass, std::string& tfaSecret, std::vector<int>& scratchCodes, std::string& qrcode);
     bool UpdateUserPassword(const std::string& user, const std::string& pass);
 
@@ -25,7 +26,6 @@ public:
 
     bool AddPassword(const std::string& account_name, const std::string& username, const std::string& password, const std::string& extra);
     bool DeletePassword(const std::string& account_name);
-    //bool ListPasswords();
     std::vector<pswmgr::PasswordEntry> ListPasswords();
     bool ModifyPassword(const std::string& account_name, const std::string& new_password);
 

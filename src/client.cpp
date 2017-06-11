@@ -58,6 +58,18 @@ bool PasswordManagerClient::Authenticate(const std::string& user, const std::str
     return true;
 }
 
+bool PasswordManagerClient::ValidateToken(const std::string& token)
+{
+    grpc::ClientContext context;
+    pswmgr::AuthenticateTokenRequest request;
+    pswmgr::TokenAuthReply response;
+
+    request.set_token(token);
+
+    grpc::Status status = m_AuthStub->ValidateToken(&context, request, &response);
+    return status.ok() && response.success();
+}
+
 std::string PasswordManagerClient::GetAuthToken() const
 {
     if(m_TokenAuth != nullptr)
