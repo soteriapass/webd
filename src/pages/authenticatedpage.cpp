@@ -19,11 +19,15 @@ bool AuthenticatedPage::HandleCookie(const Poco::Net::HTTPServerRequest& request
     request.getCookies(cookies);
     if(cookies.has("token"))
     {
-        client.SetAuthToken(cookies.get("token"));
+        const std::string& token = cookies.get("token");
+        if(client.ValidateToken(token))
+        {
+            client.SetAuthToken(token);
  
-        bool need2fa;
-        client.Authenticate("", "", "", need2fa, false);
-        return true;
+            bool need2fa;
+            client.Authenticate("", "", "", need2fa, false);
+            return true;
+        }
     }
     return false;
 }
