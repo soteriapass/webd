@@ -13,12 +13,14 @@ void DisplayPage::PreContent(std::stringstream& ss)
 
 void DisplayPage::HeaderContent(std::stringstream& ss)
 {
+/*
     if(!GetIsAuthenticated())
     {
         logging::get() << "\tRedirecting to login page" << std::endl;
         ss << "<meta http-equiv=\"refresh\" content=\"2; URL=" << GetConf().get_base_server_path() << "/?action=login\">" << std::endl;
     }
     ss << "\t<script src=\"js/display.js\"></script>" << std::endl;
+*/
 }
 
 void DisplayPage::Page(std::stringstream& ss)
@@ -36,6 +38,12 @@ void DisplayPage::RegisterParsers(Parser& parser)
         DisplayPasswords(p1, ss);
     };
     parser.RegisterParser("display_passwords", func);
+
+    auto func2 = [&](const std::string& p1, std::stringstream& ss)
+    {
+        FillHeader(p1, ss);
+    };
+    parser.RegisterParser("header", func2);
 }
 
 void DisplayPage::DisplayPasswords(const std::string&, std::stringstream& ss)
@@ -66,4 +74,14 @@ void DisplayPage::DisplayPasswords(const std::string&, std::stringstream& ss)
         ++index;
     }
     ss << ps.str();
+}
+
+void DisplayPage::FillHeader(const std::string&, std::stringstream& ss)
+{
+    if(!GetIsAuthenticated())
+    {
+        logging::get() << "\tRedirecting to login page" << std::endl;
+        ss << "<meta http-equiv=\"refresh\" content=\"2; URL=" << GetConf().get_base_server_path() << "/login.cshtml?action=login\">" << std::endl;
+    }
+    ss << "\t<script src=\"js/display.js\"></script>" << std::endl;
 }
