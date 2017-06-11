@@ -75,6 +75,10 @@ void PswmgrRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, 
         {
             contentType = "image/jpeg";
         }
+        else if(ext == "ico")
+        {
+            contentType = "image/x-icon";
+        }
         else if(ext == "cshtml")
         {
             response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
