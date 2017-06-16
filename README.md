@@ -5,7 +5,7 @@ Web server/page for accessing information from the Soteria Pass server.
 * [gRpc](http://www.grpc.io/)
 * [Protocol Buffers](https://developers.google.com/protocol-buffers/)
 * [OpenSSL](https://www.openssl.org/)
-* [pistache](http://pistache.io/)
+* [Poco C++ Libraries](https://pocoproject.org/)
 
 ## Supported platforms
 
